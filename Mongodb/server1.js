@@ -63,21 +63,54 @@ app.get("/de/:id",async(req,res)=>{
     else{
         return res.send("some error occur ")
     }
-})
-app.listen(5000,()=>console.log("server is running on https://localhost:5000"))
 
-app.post("/create",async(req,res)=>{
+})
+    app.post("/create",async(req,res)=>{
     const product=await Product.create(req.body)
     res.json(product)
 })
+
+//  Regex: Regular expressions are use to search text pattern in fields (case sensitive)
+
+// 1 start with (^)
+
+app.get("/regex", async(req,res)=>{
+    const product= await Product.find({title:{$regex:"^G"}})
+    res.json(product)
+})
+
+// 2. end with ($)
+app.get("/regex1", async(req,res)=>{
+    const product= await Product.find({title:{$regex:"r$"}})
+    res.json(product)
+})
+
+
+app.get("/regex2", async(req,res)=>{
+    const product= await Product.find({title:{$regex:"or"}})
+    res.json(product)
+})
+
+
+app.listen(5000,()=>console.log("server is running on https://localhost:5000"))
+
+
 const productSchema =new mongoose.Schema({
-    title:{type:String,
-        required:true
+    title:{ 
+        type:String,
+        required:[true,"Name is required"],
+        minlength:[3,"User name must be Atleeast 3 Characters"],
+        maxlength:[8,"maximum lenght should be be og 8 characters"],
+        unique:true
     },
     category:String,
     price:Number,
     stock:Number,
-    rating:Number,
+    rating:{
+        type:Number,
+        min:18,
+        max:118
+    },
     createdAt:{
         type:Date,
         default:Date.now
